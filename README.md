@@ -211,11 +211,14 @@ You can limit the server's Gmail access by specifying OAuth scopes during authen
 | `gmail.readonly` | Read-only access to emails (search, read, download attachments) |
 | `gmail.modify` | Full read/write access to emails (superset of `readonly` - includes sending, modifying, deleting) |
 | `gmail.compose` | Create drafts and send emails only |
+| `gmail.drafts` | Create drafts only, no sending (MCP-level alias of `gmail.compose`) |
 | `gmail.send` | Send emails only |
 | `gmail.labels` | Manage labels only |
 | `gmail.settings.basic` | Manage filters and settings |
 
 > **Note**: `gmail.modify` is a superset that includes all read capabilities. You don't need `gmail.readonly` if you have `gmail.modify`.
+
+> **Note**: Google does not expose a drafts-only OAuth scope, so `gmail.drafts` requests the `gmail.compose` scope from Google under the hood but the MCP server exposes only `draft_email` (not `send_email` or `reply_all`). A client using the raw OAuth token outside this server could still send mail.
 
 ### Authenticating with Specific Scopes
 
@@ -242,7 +245,8 @@ The server automatically filters available tools based on your authorized scopes
 |-------|---------------------|
 | `read_email`, `search_emails`, `download_attachment` | `gmail.readonly` or `gmail.modify` |
 | `list_email_labels` | `gmail.readonly`, `gmail.modify`, or `gmail.labels` |
-| `send_email`, `draft_email`, `reply_all` | `gmail.modify`, `gmail.compose`, or `gmail.send` |
+| `send_email`, `reply_all` | `gmail.modify`, `gmail.compose`, or `gmail.send` |
+| `draft_email` | `gmail.modify`, `gmail.compose`, or `gmail.drafts` |
 | `modify_email`, `delete_email`, `batch_modify_emails`, `batch_delete_emails` | `gmail.modify` |
 | `create_label`, `update_label`, `delete_label`, `get_or_create_label` | `gmail.modify` or `gmail.labels` |
 | `list_filters`, `get_filter`, `create_filter`, `delete_filter`, `create_filter_from_template` | `gmail.settings.basic` |

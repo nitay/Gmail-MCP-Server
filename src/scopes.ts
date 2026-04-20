@@ -4,28 +4,42 @@
 //   - gmail.readonly: Read-only access to emails
 //   - gmail.modify: Read AND write access (superset of readonly)
 //   - gmail.compose: Create drafts and send emails
+//   - gmail.drafts: Create drafts only (no send) — MCP-level alias of gmail.compose
 //   - gmail.send: Send emails only
 //   - gmail.labels: Manage labels only
 //   - gmail.settings.basic: Manage filters and settings
 //
 // Note: gmail.modify includes all capabilities of gmail.readonly,
 // so you don't need both scopes together.
+//
+// gmail.drafts is a virtual scope: Google does not expose a drafts-only OAuth
+// scope, so it requests the gmail.compose URL from Google but the MCP tool
+// registry gates it to draft creation only (no send).
 
 // Map shorthand scope names to full Google API URLs
 export const SCOPE_MAP: Record<string, string> = {
   "gmail.readonly": "https://www.googleapis.com/auth/gmail.readonly",
   "gmail.modify": "https://www.googleapis.com/auth/gmail.modify",
   "gmail.compose": "https://www.googleapis.com/auth/gmail.compose",
+  "gmail.drafts": "https://www.googleapis.com/auth/gmail.compose",
   "gmail.send": "https://www.googleapis.com/auth/gmail.send",
   "gmail.labels": "https://www.googleapis.com/auth/gmail.labels",
   "gmail.settings.basic": "https://www.googleapis.com/auth/gmail.settings.basic",
   "gmail.settings.sharing": "https://www.googleapis.com/auth/gmail.settings.sharing",
 };
 
-// Reverse map for converting full URLs back to shorthand
-export const SCOPE_REVERSE_MAP: Record<string, string> = Object.fromEntries(
-  Object.entries(SCOPE_MAP).map(([short, full]) => [full, short])
-);
+// Reverse map for converting full URLs back to shorthand.
+// gmail.drafts shares the compose URL; the reverse lookup prefers gmail.compose
+// so Google-returned URLs normalize to the canonical name.
+export const SCOPE_REVERSE_MAP: Record<string, string> = {
+  "https://www.googleapis.com/auth/gmail.readonly": "gmail.readonly",
+  "https://www.googleapis.com/auth/gmail.modify": "gmail.modify",
+  "https://www.googleapis.com/auth/gmail.compose": "gmail.compose",
+  "https://www.googleapis.com/auth/gmail.send": "gmail.send",
+  "https://www.googleapis.com/auth/gmail.labels": "gmail.labels",
+  "https://www.googleapis.com/auth/gmail.settings.basic": "gmail.settings.basic",
+  "https://www.googleapis.com/auth/gmail.settings.sharing": "gmail.settings.sharing",
+};
 
 // Default scopes (original behavior)
 export const DEFAULT_SCOPES = ["gmail.modify", "gmail.settings.basic"];
