@@ -254,7 +254,7 @@ export const toolDefinitions: ToolDefinition[] = [
     name: "draft_email",
     description: "Draft a new email",
     schema: SendEmailSchema,
-    scopes: ["gmail.modify", "gmail.compose"],
+    scopes: ["gmail.modify", "gmail.compose", "gmail.drafts"],
     annotations: { title: "Draft Email", destructiveHint: false },
   },
   {
